@@ -1,4 +1,4 @@
-# Reproducibility code for structured patent novelty analysis
+# Code for structured patent novelty analysis
 
 This repository contains the analysis code for a study of element-level novelty, knowledge anchoring, and the future impact of U.S. A61B utility patents granted from 2005 to 2019.
 
@@ -8,7 +8,7 @@ The repository contains code only. It does not contain patent records, claim tex
 
 Patent records and the supporting citation, CPC, text, inventor, and assignee tables are obtained from the United States Patent and Trademark Office PatentsView platform: https://patentsview.org/.
 
-Users must download the required PatentsView release themselves and comply with its terms of use. The release version and access date used for a rerun should be recorded in the run log.
+Users may download the required PatentsView release themselves and comply with its terms of use. The release version and access date used for a rerun should be recorded in the run log.
 
 ## Setup
 
@@ -27,7 +27,9 @@ paths:
   patentsview_dir: "REPLACE_WITH_PATH_TO_PATENTSVIEW"
 ```
 
-`config.yaml` is excluded from Git. This is why the repository can be shared without disclosing the author's computer paths. To place the configuration elsewhere, set the `PME_CONFIG` environment variable to its file path.
+`config.example.yaml` is a public configuration template.
+
+To place the configuration elsewhere, set the `PME_CONFIG` environment variable to its file path.
 
 For the P/M/E extraction step, set the environment variable named in `llm.api_key_env` before running the script. The default name is `ARK_API_KEY`. Do not place an API key in `config.yaml`, a notebook, or a source file.
 
@@ -47,8 +49,6 @@ The scripts are numbered in their intended execution order.
 10. `code/14_run_extended_outcomes.py`, `code/15_run_temporal_holdout.py`, and `code/16_run_temporal_robustness.py` run supplementary robustness analyses.
 11. `code/17_create_manuscript_figure_notebook.py` creates a notebook for manuscript figures after the required input panels and model outputs have been generated.
 
-All generated directories are ignored by Git. Run scripts from the repository root so the shared configuration can be found.
-
 ## Validation
 
 Before a full run, check that the copied configuration points to the expected PatentsView release and run:
@@ -64,3 +64,5 @@ The public code uses relative project paths and a local, ignored configuration f
 ## License
 
 The code is released under the MIT License. Patent records and other third-party materials remain subject to the terms set by their respective providers.
+
+For questions regarding the paper, please contact the author(s) of this study.
