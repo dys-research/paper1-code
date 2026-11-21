@@ -1,0 +1,47 @@
+{
+  "data": [
+    "scripts/data/build_sample.py",
+    "scripts/data/build_texts.py",
+    "scripts/data/build_controls.py"
+  ],
+  "extract": [
+    "scripts/extraction/prepare_inputs.py",
+    "scripts/extraction/run_extraction.py",
+    "scripts/extraction/prepare_roles.py"
+  ],
+  "measurement": [
+    "scripts/measurement/01_build_base_panel.py",
+    "scripts/measurement/02_build_entity_histories.py",
+    "scripts/measurement/03_build_citation_outcomes.py",
+    "scripts/measurement/04_prepare_role_inputs.py",
+    "scripts/measurement/05_build_temporal_families.py",
+    "scripts/measurement/06_build_self_citations_and_impact.py",
+    "scripts/measurement/11_assemble_panel_and_quality.py",
+    "scripts/measurement/19_test_temporal_metrics.py",
+    "scripts/measurement/22_prepare_encoding_manifest.py",
+    "scripts/measurement/18_encode_frozen_texts.py",
+    "scripts/measurement/23_run_temporal_novelty.py",
+    "scripts/measurement/32_prepare_anchoring_inputs.py",
+    "scripts/measurement/33_prepare_future_reuse_metadata.py",
+    "scripts/measurement/34_pack_reuse_vectors.py",
+    "scripts/measurement/35_run_future_text_reuse.py",
+    "scripts/measurement/36_compute_anchoring_from_vectors.py",
+    "scripts/measurement/37_assemble_final_panel.py"
+  ],
+  "analysis": [
+    "scripts/analysis/explanatory.py",
+    "scripts/analysis/forecast.py",
+    "scripts/analysis/summarize.py"
+  ],
+  "robustness": [
+    "scripts/robustness/prepare.py",
+    "scripts/robustness/explanatory.py",
+    "scripts/robustness/roles.py",
+    "scripts/robustness/inference.py",
+    "scripts/robustness/calibration.py"
+  ],
+  "diagnostics": [
+    "scripts/robustness/kelly.py",
+    "scripts/robustness/conditional_sample.py"
+  ]
+}

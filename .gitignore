@@ -1,7 +1,37 @@
-config.yaml
+# Local configuration and credentials
+config.toml
 .env
-.venv/
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Downloaded data, model weights, generated results and caches
+/data/
+/work/
+/models/
+/outputs/
+/dist/
+*.parquet
+*.npy
+*.npz
+*.duckdb*
+*.pt
+*.pth
+*.safetensors
+*.joblib
+*.pkl
+
+# Python and editors
 __pycache__/
 *.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
 .ipynb_checkpoints/
-work/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

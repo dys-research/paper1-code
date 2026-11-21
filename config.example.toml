@@ -1,0 +1,65 @@
+# Copy to config.toml. The private copy is excluded from Git.
+# Relative paths are resolved relative to this file, not the shell directory.
+
+[paths]
+work_dir = "work"
+
+[inputs]
+# Directory containing the normalized PatentsView Parquet tables documented
+# in scripts/data/README.md. Downloaded records are not bundled in this repo.
+patentsview_root = "data/patentsview"
+claims_root = "data/claims"
+# Optional: existing role extraction outputs, prepared modelling panel, and
+# vector arrays. Leave blank to use the pipeline's corresponding outputs.
+role_outputs = ""
+# Optional canonical source-validated role Parquet; raw JSONL belongs above.
+role_inputs = ""
+panel = ""
+overall_vectors = ""
+overall_vector_ids = ""
+encoder_model = ""
+# Whole-corpus title-and-abstract embeddings for semantic-reuse outcomes.
+# Both must refer to the same encoder checkpoint as the focal embeddings.
+semantic_index = ""
+semantic_vectors = ""
+# Optional prepared features for selected supplementary analyses.
+lexical_features = ""
+# Optional external arrays for the separately documented pairing diagnostic.
+shuffled_vectors = ""
+shuffled_vector_ids = ""
+# Original historical variants for the optional manuscript common-sample builder.
+# Required columns: patent_id, strict10_overall_novelty_raw, window5_overall_novelty_raw.
+history_novelty_variants = ""
+# Optional fixed IDs; otherwise manuscript mode uses the generated sample CSV.
+conditional_sample = ""
+
+[study]
+observation_end = "2025-12-30"
+# Record the actual source release and download date for your own rerun.
+data_release = ""
+download_date = ""
+
+[compute]
+threads = 4
+duckdb_memory = "4GB"
+
+[encoder]
+model = "AI-Growth-Lab/PatentSBERTa"
+# Set an exact Hugging Face commit for a documented rerun. A remote download
+# is required unless inputs.encoder_model names an existing local checkpoint.
+revision = ""
+# The retained encoder design uses a fixed 512-token cap and CLS pooling.
+
+[analysis]
+pca_components = 16
+random_seed = 20261103
+alphas = [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0]
+
+[extraction]
+# Provide your own OpenAI-compatible endpoint and model. No API call is made
+# by checks, help, or analysis commands. Credentials are read only from env.
+endpoint = ""
+model = ""
+api_key_env = "TFSC_LLM_API_KEY"
+concurrency = 4
+temperature = 0.0

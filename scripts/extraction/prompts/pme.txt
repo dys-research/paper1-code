@@ -1,0 +1,123 @@
+You are extracting structured technical knowledge elements from US patent text.
+
+Input fields:
+- title: original patent title.
+- abstract: original patent abstract.
+- claim_1: the first claim, used especially to identify the solution mechanism.
+
+Extract exactly three elements:
+- P: technical problem / technical need / task / improvement target. Existing limitation, defect, risk, unmet need, task to be solved, concrete functional objective, or performance aspect to be improved.
+- M: solution mechanism. Core component, structure, material, composition, process step, control logic, device architecture, or implementation method.
+- E: technical effect. Explicit or directly implied function, performance improvement, efficiency improvement, safety improvement, stability improvement, risk reduction, reliability improvement, cost reduction, simplification, or new technical capability.
+
+Return only valid JSON. Do not output markdown. Do not add explanation.
+
+Required JSON keys:
+{
+  "P": {
+    "present": true/false,
+    "normalized_text": string or null,
+    "evidence_span": string or null,
+    "source_field": "title" or "abstract" or "claim_1" or null,
+    "confidence": number between 0 and 1,
+    "absence_reason": string or null
+  },
+  "M": {
+    "present": true/false,
+    "normalized_text": string or null,
+    "evidence_span": string or null,
+    "source_field": "title" or "abstract" or "claim_1" or null,
+    "confidence": number between 0 and 1,
+    "absence_reason": string or null
+  },
+  "E": {
+    "present": true/false,
+    "normalized_text": string or null,
+    "evidence_span": string or null,
+    "source_field": "title" or "abstract" or "claim_1" or null,
+    "confidence": number between 0 and 1,
+    "absence_reason": string or null
+  }
+}
+
+Extraction preference:
+- Extract P, M, and E when they are supported by the provided title, abstract, or claim_1. Avoid unnecessary nulls, but do not force every patent to have P and E.
+- For P and E, present=true should require more than merely naming the invention's object. There must be a supported technical purpose, need, function, improvement target, capability, or effect.
+- Avoid returning null. Use present=false only when the element is genuinely unsupported by any continuous text span in title, abstract, or claim_1.
+- Do not leave an element as null merely because the wording is indirect, compressed, legalistic, implicit, or spread across the patent text.
+- Prefer concise but informative normalized_text over null.
+- Prefer a short, continuous evidence_span that best supports the extracted element.
+- M should almost always be extracted if claim_1 describes a concrete technical structure, component, material, composition, process, device, system, or method.
+- P and E are often less explicit than M in patent text. Still extract them when the text indicates a technical purpose, intended use, function, improvement direction, target performance, capability, or task.
+
+
+A61B medical-device-specific guidance:
+- In A61B medical-device patents, P may be a diagnostic, surgical, therapeutic, monitoring, imaging, sensing, navigation, sampling, safety, patient-comfort, accuracy, invasiveness, reliability, workflow, calibration, or device-control need.
+- Do not mark P as false merely because the patent frames the need as a clinical task or device function rather than using words like problem, drawback, limitation, or need. If a continuous span supports a concrete medical-device task or improvement target, extract it as P.
+- In A61B patents, M may be an imaging system, sensor arrangement, catheter, endoscope, surgical instrument, implantable or wearable device, electrode, optical/acoustic/ultrasound component, control algorithm, signal-processing module, data-acquisition method, anatomical navigation method, device structure, or medical workflow mechanism.
+- M should focus on the core technical mechanism that makes the diagnostic, surgical, monitoring, imaging, or therapeutic device work. Do not copy a long claim; choose the central clause or mechanism.
+- In A61B patents, E may be improved detection, measurement, localization, visualization, diagnosis, treatment guidance, minimally invasive operation, reduced patient risk, reduced discomfort, improved accuracy, faster workflow, improved stability, safer operation, or better monitoring capability.
+- Do not mark E as false merely because the text states an enabled clinical or technical capability rather than using words like advantage, effect, or improvement. If a continuous span supports what the medical device enables, improves, reduces, detects, monitors, controls, guides, prevents, or makes possible, extract it as E.
+- Still require every present=true P, M, and E to have a continuous verbatim evidence_span from exactly one of title, abstract, or claim_1. Do not invent missing P or E when no span supports them.
+Special rules for P:
+- P should capture the technical problem, unmet need, task to be solved, or improvement target addressed by the invention.
+- P is broader than an explicitly stated defect, but narrower than a general application field or invention object.
+- P is present=true when the provided text explicitly supports at least one of the following:
+  1. an existing limitation, defect, drawback, disadvantage, risk, failure mode, instability, inefficiency, or uncertainty;
+  2. an unmet technical need or technical requirement;
+  3. a task to be solved or technical challenge to be addressed;
+  4. a performance aspect to be improved, such as capacity, cycle life, safety, stability, conductivity, efficiency, reliability, durability, manufacturability, energy density, power output, control accuracy, or cost;
+  5. a functional objective that the invention is designed to achieve, but only when the text states a concrete technical function rather than merely naming an object.
+- Do not require explicit words such as "problem", "defect", "drawback", "limitation", or "need".
+- If the abstract states a concrete improvement or effect, P may be expressed as the corresponding improvement target. For example, if the text states improved cycle characteristics, P may be the need to improve cycle characteristics.
+- If the text states a concrete function or capability, P may be expressed as the technical task of achieving that function or capability.
+- Do not mark P as present=true merely because the text names the invention object, technical field, component, material, device, system, or application area.
+- Do not treat "a battery", "an electrode", "an electrolyte", "a wind turbine", "a system", "a method", or similar invention objects as P.
+- Do not use a title alone as P evidence unless the title contains a concrete function, improvement target, need, risk, or task.
+- Prefer abstract as the source_field for P. Use claim_1 only if claim_1 contains a concrete task, functional objective, improvement target, need, risk, or limitation.
+- P is allowed to be missing when the text only describes what the invention is or what it comprises, without stating a need, task, function, improvement target, limitation, or risk.
+- For P evidence_span, select the shortest continuous verbatim span that directly supports the need, task, function, improvement target, limitation, risk, or problem.
+
+Special rules for E:
+- E does not need to be phrased as "advantage" or "effect" in the text.
+- If the text states what the invention enables, achieves, improves, reduces, prevents, stabilizes, controls, increases, decreases, simplifies, or makes possible, extract that as E.
+- If the effect is expressed as a function of the claimed mechanism, extract the function as E.
+- If only a use or capability is stated, E may be the directly supported capability, not an unsupported performance claim.
+- Title alone should be used for E only when it explicitly states a technical effect, improvement, performance outcome, risk reduction, function achieved, or new capability.
+- A descriptive property in the title, such as "lightweight", "composite", "solid", "secondary", or "non-aqueous", is not sufficient for E unless the text clearly presents it as an achieved effect or advantage.
+
+Special rules for M:
+- M should summarize the core solution mechanism, not copy the entire claim.
+- The normalized_text for M should usually be 30-80 words. Avoid outputs longer than 120 words unless absolutely necessary.
+- For M evidence_span, select the shortest continuous verbatim span that contains the core component, material, structure, composition, process step, device architecture, or method.
+- Prefer an evidence_span of 20-60 words from claim_1. If claim_1 is too long or legally complex, choose one representative clause rather than the whole claim.
+- Do not use an entire claim as evidence_span unless the claim is very short.
+- Do not paraphrase, simplify, normalize symbols, or change punctuation inside evidence_span.
+
+Evidence rules:
+- For each present=true element, evidence_span must be a continuous verbatim substring from exactly one source field: title, abstract, or claim_1.
+- source_field must be one of: title, abstract, claim_1.
+- Do not create an evidence_span by stitching together non-contiguous fragments.
+- Do not modify the wording, spelling, punctuation, symbols, units, or order of evidence_span.
+- Preserve ASCII patent notation exactly, including d.sub.002, .ANG., wt.%, mol%, g/cc, %, numerals, chemical formulas, and claim references.
+- Do not invent information that is not supported by the patent text.
+- Do not use general technical knowledge beyond the provided text.
+- In normalized_text, preserve patent ASCII notation exactly when it appears in the source text. Do not convert .degree., .ltoreq., .gtoreq., .ANG., d.sub.002, m.sup.2, Li.sub.x, wt.%, mol%, or g/cc into Unicode symbols.
+- If the source uses patent notation such as .degree. C. or .ltoreq., keep that notation in normalized_text.
+
+Output discipline:
+- Return exactly one JSON object.
+- Do not wrap the JSON in code fences.
+- Do not include any text before or after the JSON.
+- If an element is present=true, normalized_text, evidence_span, source_field, confidence, and absence_reason must be filled as follows:
+  - normalized_text: concise standardized expression of the element.
+  - evidence_span: verbatim continuous substring from one source field.
+  - source_field: title, abstract, or claim_1.
+  - confidence: number between 0 and 1.
+  - absence_reason: null.
+- If an element is present=false, use:
+  - normalized_text: null
+  - evidence_span: null
+  - source_field: null
+  - confidence: number between 0 and 1
+  - absence_reason: brief reason.
